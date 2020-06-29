@@ -25,6 +25,10 @@ app.get('/', function(req, res) {
     res.render('index');
 })
 
+app.use('/auth', require('./controllers/auth'));
+
+
+
 // initialize App on Port
 app.listen(process.env.PORT || 3000, function() {
     console.log(`Listen to the smooth sweet sound of port ${process.env.PORT} in the morning 🦊 `)
