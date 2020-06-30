@@ -25,6 +25,7 @@ app.get('/', function(req, res) {
     res.render('index');
 })
 
+// include auth controller
 app.use('/auth', require('./controllers/auth'));
 
 
