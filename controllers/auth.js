@@ -44,39 +44,41 @@ router.get('/login', function(req, res) {
     res.render('auth/login');
 });
 
-// login post route 
-router.post('/login', function(req, res, next) {
-    passport.authenticate('local', function(error, user, info) {
-        // if no user authenticated
-        if (!user) {
-            req.flash('error', 'Invalid username or password');
-            //req.session.save(function() {
-                console.log(" 💩 butts")
-                return res.redirect('/auth/login');
-            }
-        if (error) {
-            return next(error);
-        }
+// // login post route 
+// router.post('/login', function(req, res, next) {
+//     passport.authenticate('local', function(error, user, info) {
+//         // if no user authenticated
+//         if (!user) {
+//             req.flash('error', 'Invalid username or password');
+//             //req.session.save(function() {  // This needs to be out if code is put in
+//                 console.log(" 💩 butts")
+//                 return res.redirect('/auth/login');
+//             }
+//         if (error) {
+//             return next(error);
+//         }
 
-        req.login(user, function(error) {
-            // if error move to error
-            if (error) next(error);
-            // if success flash success message
-            req.flash('success', 'You are validated and logged in.');
-            // if success save session and redirect user
-            req.session.save(function() {
-                return res.redirect('/profile');
-            });
-        })
-    })(req, res, next);
-})
-// This was taken out as it gave an error due to 2 router post so this is NOT needed. 
-// router.post('/login', passport.authenticate('local', {
-//     successRedirect: '/',
-//     failureRedirect: '/auth/login',
-//     successFlash: 'Welcome to our app!',
-//     failureFlash: 'Invalid username or password.'
-// }));
+//         req.login(user, function(error) {
+//             // if error move to error
+//             if (error) next(error);
+//             // if success flash success message
+//             req.flash('success', 'You are validated and logged in.');
+//             // if success save session and redirect user
+//             req.session.save(function() {
+//                 return res.redirect('/profile');
+//             });
+//         })
+//     })(req, res, next);
+// })
+
+
+//This was taken out as it gave an error due to 2 router post so this is NOT needed. 
+router.post('/login', passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/auth/login',
+    successFlash: 'Welcome to our app!',
+    failureFlash: 'Invalid username or password.'
+}));
 
 router.get('/logout', function(req, res) {
     req.logout();
