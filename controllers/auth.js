@@ -1,13 +1,11 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
 const db = require('../models');
 // import middleware
-const flash = require("flash");
+const flash = require('flash');
+const passport = require("../config/ppConfig");
 
-const passport = require ("../config/ppConfig");
-
-
-//register get route 
+// register get route
 router.get('/register', function(req, res) {
     res.render('auth/register');
 })
@@ -23,51 +21,55 @@ router.post('/register', function(req, res) {
     }).then(function([user, created]) {
         // if user was created
         if (created) {
-            console.log("User created ! 🌴 ")
-            res.redirect("/")
+            console.log("User created! 🎉");
+            passport.authenticate('local', {
+                successRedirect: '/profile',
+                successFlash: 'Thanks for signing up!'
+            })(req, res);
         } else {
-            console.log("User email already exists ⛑. ")
-            res.flash('error', 'Error: email already exists for user. Try agian.');
+            console.log("User email already exists 🚫.");
+            req.flash('error', 'Error: email already exists for user. Try again.');
             res.redirect('/auth/register');
         }
-       
     }).catch(function(err) {
-        console.log(`Error Found. \nMessage: ${err.message}. \nPlease review - ${err}`)
+        console.log(`Error found. \nMessage: ${err.message}. \nPlease review - ${err}`);
         req.flash('error', err.message);
         res.redirect('/auth/register');
     })
 })
-//login get route
-router.get('/login', function(req,res) {
+
+
+// login get route
+router.get('/login', function(req, res) {
     res.render('auth/login');
 });
 
-//login post route
-router.post('/login', function(req, res, next) {
-    passport.authenticate('local', function(error, user, info) {
-        // if no user authentcatiod
-        if (!user) {
-            req.flash('error', 'Invalid username or password');
-            req.session.save(function() {
-                return res.redirect('/auth/login');
-            });
-        }
-        if (error) {
-            return next(error);
-        }
-        req.logIn(function(user, error) {
-            // If error move to error
-            if (error) next(error);
-            // If success flash sucess message
-            req.flash('success', 'You are validated and logged in.');
-            // If success save session and rediret user
-            req.session.save(function() {
-                return res.redirect('/');
-            })
-        })
-    })
-})
+// login post route
+// router.post('/login', function(req, res, next) {
+//     passport.authenticate('local', function(error, user, info) {
+//         // if no user authenticated
+//         if (!user) {
+//             req.flash('error', 'Invalid username or password');
+//             req.session.save(function() {
+//                 return res.redirect('/auth/login');
+//             });
+//         }
+//         if (error) {
+//             return next(error);
+//         }
 
+//         req.login(user, function(error) {
+//             // if error move to error
+//             if (error) next(error);
+//             // if success flash success message
+//             req.flash('success', 'You are validated and logged in.');
+//             // if success save session and redirect user
+//             req.session.save(function() {
+//                 return res.redirect('/');
+//             });
+//         })
+//     })(req, res, next);
+// })
 
 router.post('/login', passport.authenticate('local', {
     successRedirect: '/',
@@ -79,7 +81,7 @@ router.post('/login', passport.authenticate('local', {
 router.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/');
-})
+});
 
-
+// export router
 module.exports = router;
